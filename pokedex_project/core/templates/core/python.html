@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Pokedex</title>
+</head>
+
+<body>
+    <h1>The Pokemon List</h1>
+    <p>{{message}}</p>
+    <ul>
+        {% for p in pokemon_list %}
+        <li>
+            {{p.name}} is found at:
+            {% for spawn in p.pokemonlocation_set.all %}
+                {{spawn.location.name}},
+            {% endfor %}
+        </li>
+        {% endfor %}
+    </ul>
+</body>

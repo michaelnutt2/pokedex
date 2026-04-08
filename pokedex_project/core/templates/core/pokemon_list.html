@@ -14,6 +14,20 @@
         <li>No Pokemon found in the database</li>
         {% endfor %}
     </ul>
+    <ul>
+        {% for p in tanks %}
+        <li><strong>{{ p.name}}</strong> - HP: {{p.hp}}</li>
+        {% empty %}
+        <li>No Pokemon found in the database</li>
+        {% endfor %}
+    </ul>
+    <ul>
+        {% for p in izards %}
+        <li>{{p.name}}</li>
+        {% empty %}
+        <li>No Pokemon found in the database</li>
+        {% endfor %}
+    </ul>
 </body>
 
 </html>
