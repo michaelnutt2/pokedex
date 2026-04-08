@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Pokedex</title>
+</head>
+
+<body>
+    <h1>National Pokedex</h1>
+    <ul>
+        {% for p in pokemon_list %}
+        <li><strong>#{{ p.pokedex_number }} {{ p.name }}</strong> - HP: {{ p.hp }}</li>
+        {% empty %}
+        <li>No Pokemon found in the database</li>
+        {% endfor %}
+    </ul>
+</body>
+
+</html>

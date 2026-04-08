@@ -1,0 +1,13 @@
+QUERY PLAN
+HashAggregate  (cost=188.85..188.97 rows=3 width=66)
+  Group Key: r.name
+  Filter: (count(pl.pokedex_number) > 200)
+  ->  Hash Join  (cost=30.41..158.33 rows=6103 width=62)
+        Hash Cond: (l.region_id = r.id)
+        ->  Hash Join  (cost=29.19..134.30 rows=6103 width=8)
+              Hash Cond: (pl.location_id = l.id)
+              ->  Seq Scan on pokemon_location pl  (cost=0.00..89.03 rows=6103 width=8)
+              ->  Hash  (cost=16.86..16.86 rows=986 width=8)
+                    ->  Seq Scan on locations l  (cost=0.00..16.86 rows=986 width=8)
+        ->  Hash  (cost=1.10..1.10 rows=10 width=62)
+              ->  Seq Scan on regions r  (cost=0.00..1.10 rows=10 width=62)
