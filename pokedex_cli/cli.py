@@ -25,8 +25,8 @@ def main_menu():
             search_pokemon()
         elif choice == '2':
             register_pokemon()
-        # elif choice == '3':
-        #     view_region_report()
+        elif choice == '3':
+            view_region_report()
         elif choice == '4':
             return
         else:
@@ -65,6 +65,25 @@ def search_pokemon():
             cursor.close()
             conn.close()
 
+def list_types():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT * FROM types ORDER BY id"
+        )
+
+        print(f"{'ID':<5} | {'Type':<15}")
+        for type in cursor.fetchall():
+            print(f"{type[0]} | {type[1]}")
+    except psycopg2.Error as e:
+        print(f"Database error: {e}")
+
+    finally:
+        if conn:
+            cursor.close()
+            conn.close()
+
 def register_pokemon():
     print("Register New Pokemon")
     p_id = input("Enter new Pokedex Number: ")
@@ -72,7 +91,7 @@ def register_pokemon():
     p_hp = input("Enter Base HP: ")
 
     print("Types:")
-    print("1: Normal, 2: Fighting, 3: Flying, 4: Poison...")
+    list_types()
     type_1_id = input("Enter Primary Type ID: ")
     type_2_id = input("Enter Secondary Type ID (or leave blank): ")
 
@@ -101,6 +120,53 @@ def register_pokemon():
         conn.commit()
         print("Pokemon registered.")
 
+    except psycopg2.errors.UniqueViolation:
+        conn.rollback()
+        print(f"Error: A Pokemon with Pokedex Number {p_id} already exists.")
+
+    except psycopg2.errors.ForeignKeyViolation:
+        conn.rollback()
+        print("Error: Invalid Type ID provided. ")
+
+    except psycopg2.Error as e:
+        conn.rollback()
+        print(f"Database error: {e}")
+
+    finally:
+        if conn:
+            cursor.close()
+            conn.close()
+
+def view_region_report():
+    print("Region Population Report")
+
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = """
+            SELECT
+                r.name AS region_name,
+                COUNT(DISTINCT l.id) AS total_locations,
+                COUNT(pl.pokedex_number) AS total_pop
+            FROM regions r
+            JOIN locations l ON r.id = l.region_id
+            JOIN pokemon_location pl ON l.id = pl.location_id
+            GROUP BY r.name
+            ORDER BY total_pop DESC
+        """
+
+        cursor.execute(query)
+        results = cursor.fetchall()
+
+        print(f"{'Region':<15} | {'Locations':<10} | {'Total Population':<20}")
+        print("-"*51)
+
+        if not results:
+            print("No region data found")
+        else:
+            for row in results:
+                print(f"{row[0]:<15} | {row[1]:<10} | {row[2]:<20}")
     except psycopg2.Error as e:
         print(f"Database error: {e}")
 
